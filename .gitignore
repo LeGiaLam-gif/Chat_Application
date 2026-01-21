@@ -1,0 +1,36 @@
+# Compiled class files
+bin/
+target/
+*.class
+
+# Log files
+logs/
+*.log
+
+# Maven
+.mvn/
+mvn.cmd
+mvn
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.project
+.classpath
+.settings/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# SSL certificates
+*.jks
+*.keystore
+
+# Build artifacts
+*.jar
+!libs/*.jar
+
+# Test outputs
+test-output/
