@@ -32,22 +32,28 @@ public class HeartbeatService {
     }
 
     private void sendPings() {
+        // Check status
         if (!running) {
             return;
         }
 
         context.getHandlers().forEach((username, handler) -> {
             try {
+                // Get session of client
                 var session = handler.getSession();
                 if (session != null) {
+                    // Check the number of missed PINGs
                     if (session.getMissedPings() >= context.getConfig().getMaxMissedPings()) {
                         System.out.println("[HEARTBEAT] Timeout for " + username);
                         handler.disconnect();
                         return;
                     }
 
+                    // Create and send PING message
                     Message ping = new Message(MessageType.PING, "SERVER", username, "");
                     handler.send(ping);
+
+                    // Increase counter for missed pings
                     session.incrementMissedPings();
                 }
             } catch (Exception e) {
