@@ -1,13 +1,16 @@
 package client.gui;
 
+import java.io.File;
+
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
+
 import client.core.ChatClient;
 import client.core.NetworkListener;
 import client.service.FileSender;
 import common.protocol.Message;
 import common.protocol.MessageType;
-
-import javax.swing.*;
-import java.io.File;
 
 public class ClientController implements NetworkListener.MessageCallback {
     private ChatClient client;
@@ -17,7 +20,7 @@ public class ClientController implements NetworkListener.MessageCallback {
     private FileSender fileSender;
 
     public void start() {
-        // Show login dialog
+         
         LoginDialog loginDialog = new LoginDialog(null);
         loginDialog.setVisible(true);
 
@@ -26,17 +29,17 @@ public class ClientController implements NetworkListener.MessageCallback {
         }
 
         try {
-            // Connect to server
+             
             client = new ChatClient(
                     loginDialog.getHost(),
                     loginDialog.getPort(),
                     loginDialog.getUsername());
 
-            // Create GUI
+             
             frame = new ChatFrame(loginDialog.getUsername());
             frame.setVisible(true);
 
-            // Setup listeners
+             
             frame.sendButton.addActionListener(e -> sendMessage());
             frame.inputField.addActionListener(e -> sendMessage());
             frame.fileButton.addActionListener(e -> sendFile());
@@ -48,12 +51,12 @@ public class ClientController implements NetworkListener.MessageCallback {
                 }
             });
 
-            // Start network listener
+             
             listener = new NetworkListener(client, this);
             listenerThread = new Thread(listener);
             listenerThread.start();
 
-            // Initialize FileSender
+             
             fileSender = new FileSender(client);
 
             frame.appendMessage("=== Connected to server ===");
@@ -129,7 +132,7 @@ public class ClientController implements NetworkListener.MessageCallback {
 
     @Override
     public void onMessageReceived(Message msg) {
-        // Handle all MessageType enum values - NO WARNINGS!
+         
         switch (msg.getType()) {
             case CHAT:
                 frame.appendMessage("[" + msg.getSender() + "] " + msg.getContent());
@@ -149,51 +152,50 @@ public class ClientController implements NetworkListener.MessageCallback {
                 break;
 
             case FILE_CHUNK:
-                // TODO: Implement file receiving
+                 
                 break;
 
             case FILE_ACK:
-                // Handled by FileSender
+                 
                 break;
 
-            // Connection management - handled elsewhere but need cases for no warnings
-            case CONNECT:
-                // Already handled during connection
+             case CONNECT:
+                 
                 break;
 
             case ACCEPT:
-                // Already handled during connection
+                 
                 break;
 
             case REJECT:
-                // Already handled during connection
+                 
                 frame.appendMessage("*** Connection rejected: " + msg.getContent() + " ***");
                 break;
 
             case DISCONNECT:
-                // Server disconnecting us
+                 
                 frame.appendMessage("*** Server disconnected ***");
                 break;
 
-            // Heartbeat
+             
             case PING:
-                // Send PONG response
+                 
                 try {
                     Message pong = new Message(MessageType.PONG,
                             client.getUsername(), "");
                     client.send(pong);
                 } catch (Exception e) {
-                    // Ignore
+                     
                 }
                 break;
 
             case PONG:
-                // We don't send PING, so this shouldn't happen
+                 
                 break;
 
-            // Command responses are sent as SERVER messages
+             
             case COMMAND:
-                // We send commands, don't receive them
+                 
                 break;
 
             default:
@@ -204,12 +206,12 @@ public class ClientController implements NetworkListener.MessageCallback {
 
     private void updateUserList(Message msg) {
         if (msg.getContent().contains("joined") || msg.getContent().contains("left")) {
-            // Request user list
+             
             try {
                 client.send(new Message(MessageType.COMMAND,
                         client.getUsername(), "/who"));
             } catch (Exception e) {
-                // Ignore
+                 
             }
         } else if (msg.getContent().startsWith("Online users:")) {
             String[] users = msg.getContent().substring(14).split(", ");
@@ -232,7 +234,7 @@ public class ClientController implements NetworkListener.MessageCallback {
                 "File Transfer", JOptionPane.YES_NO_OPTION);
 
         if (choice == JOptionPane.YES_OPTION) {
-            // TODO: Implement file receiving
+             
             frame.appendMessage("*** File receiving not yet implemented ***");
         }
     }
