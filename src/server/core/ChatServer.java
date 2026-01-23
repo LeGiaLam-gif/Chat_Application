@@ -4,12 +4,14 @@ import common.protocol.ProtocolConstants;
 import server.config.ServerConfig;
 import server.security.SSLConfig;
 import server.http.HttpApiServer;
+import server.grpc.GrpcChatServer;
 
 import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLServerSocketFactory;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import server.websocket.ChatWebSocketServer;
 
 /**
  * ChatServer - Main server entry point
@@ -30,11 +32,15 @@ public class ChatServer {
     private final ServerContext context;
     private ServerSocket serverSocket;
     private HttpApiServer httpServer;
+    private ChatWebSocketServer wsServer;
+    private GrpcChatServer grpcServer;
     private volatile boolean running;
 
     public ChatServer(ServerConfig config) {
         this.context = new ServerContext(config);
-        this.httpServer = new HttpApiServer(context, 8080); // ← ADD THIS
+        this.httpServer = new HttpApiServer(context, 8080);
+        this.wsServer = new ChatWebSocketServer(8081, context);
+        this.grpcServer = new GrpcChatServer(context, 9090);
         this.running = false;
     }
 
@@ -50,6 +56,17 @@ public class ChatServer {
             System.err.println("[ERROR] Failed to start HTTP server: "
                     + e.getMessage());
         }
+
+        wsServer.start();
+
+        try {
+            grpcServer.start();
+        } catch (Exception e) {
+            System.err.println("[ERROR] Failed to start gRPC server: "
+                    + e.getMessage());
+        }
+
+        System.out.println();
 
         try {
             // Create ServerSocket (plain or SSL)
@@ -129,6 +146,19 @@ public class ChatServer {
             httpServer.stop();
         } catch (Exception e) {
             System.err.println("[ERROR] Error stopping HTTP server: "
+                    + e.getMessage());
+        }
+
+        try {
+            wsServer.shutdown();
+        } catch (Exception e) {
+            System.err.println("[ERROR] Error stopping WebSocket server");
+        }
+
+        try {
+            grpcServer.stop();
+        } catch (Exception e) {
+            System.err.println("[ERROR] Error stopping gRPC server: "
                     + e.getMessage());
         }
 

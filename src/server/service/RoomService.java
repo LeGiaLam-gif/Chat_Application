@@ -5,11 +5,11 @@ import common.model.ChatRoom;
 
 public class RoomService {
     private final ServerContext context;
-
+    
     public RoomService(ServerContext context) {
         this.context = context;
     }
-
+    
     public boolean createRoom(String name, String description, String creator) {
         if (context.getRoom(name) != null) {
             return false;
@@ -19,7 +19,7 @@ public class RoomService {
         context.addRoom(name, room);
         return true;
     }
-
+    
     public boolean joinRoom(String username, String roomName) {
         ChatRoom room = context.getRoom(roomName);
         if (room == null || room.isFull()) {
@@ -32,7 +32,7 @@ public class RoomService {
         }
         return false;
     }
-
+    
     public boolean leaveRoom(String username, String roomName) {
         ChatRoom room = context.getRoom(roomName);
         if (room != null) {

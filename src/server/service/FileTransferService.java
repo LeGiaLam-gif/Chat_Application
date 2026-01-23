@@ -5,11 +5,11 @@ import common.protocol.Message;
 
 public class FileTransferService {
     private final ServerContext context;
-
+    
     public FileTransferService(ServerContext context) {
         this.context = context;
     }
-
+    
     public void handleFileMeta(Message msg) {
         // Forward file offer to receiver
         var handler = context.getHandler(msg.getReceiver());
@@ -21,7 +21,7 @@ public class FileTransferService {
             }
         }
     }
-
+    
     public void handleFileChunk(Message msg) {
         // Forward chunk to receiver
         var handler = context.getHandler(msg.getReceiver());
@@ -33,7 +33,7 @@ public class FileTransferService {
             }
         }
     }
-
+    
     public void handleFileAck(Message msg) {
         // Forward ACK back to sender
         var handler = context.getHandler(msg.getReceiver());

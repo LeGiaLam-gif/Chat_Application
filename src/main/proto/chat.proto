@@ -1,0 +1,81 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "common.grpc";
+option java_outer_classname = "ChatProto";
+
+package chat;
+
+// ===== SERVICE DEFINITION =====
+service ChatService {
+  // Authenticate user
+  rpc Authenticate(AuthRequest) returns (AuthResponse);
+  
+  // Send message (unary)
+  rpc SendMessage(ChatMessage) returns (MessageResponse);
+  
+  // Stream messages from server
+  rpc StreamMessages(StreamRequest) returns (stream ChatMessage);
+  
+  // Get online users
+  rpc GetOnlineUsers(Empty) returns (UserList);
+  
+  // Send private message
+  rpc SendPrivateMessage(PrivateMessage) returns (MessageResponse);
+}
+
+// ===== MESSAGE TYPES =====
+
+// Empty message
+message Empty {}
+
+// Authentication
+message AuthRequest {
+  string username = 1;
+  string password = 2;
+}
+
+message AuthResponse {
+  bool success = 1;
+  string message = 2;
+  string token = 3;
+}
+
+// Chat messages
+message ChatMessage {
+  string sender = 1;
+  string content = 2;
+  int64 timestamp = 3;
+  MessageType type = 4;
+}
+
+enum MessageType {
+  BROADCAST = 0;
+  PRIVATE = 1;
+  SYSTEM = 2;
+}
+
+// Private message
+message PrivateMessage {
+  string sender = 1;
+  string receiver = 2;
+  string content = 3;
+  int64 timestamp = 4;
+}
+
+// Response
+message MessageResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+// Stream request
+message StreamRequest {
+  string username = 1;
+}
+
+// User list
+message UserList {
+  repeated string usernames = 1;
+  int32 count = 2;
+}

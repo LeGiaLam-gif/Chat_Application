@@ -1,14 +1,7 @@
 package client.gui;
 
-import java.awt.Frame;
-import java.awt.GridLayout;
-
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
+import javax.swing.*;
+import java.awt.*;
 
 public class LoginDialog extends JDialog {
     private JTextField usernameField;
